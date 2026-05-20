@@ -388,6 +388,6 @@ echo  ITxhcmNoPgovICAgICAgICAgICAgICAgMTU4OTI5ODczMyAgICAgICAgICAgICAgMCAgICAgIC
 ## ZIP File ##
 
 zip -r mimi.zip ./mimi
-````
+```
 Now you can load the project in VSCode and check from the General settings that "Platform Toolset" is set to the current VS version and from C/C++ settings disable  “Treat Warnings as Errors”, lasty compile as X64 Release.
 Now it is where the fun begins as you can use this tool(https://github.com/raskolnikov90/Beatrice.py/blob/main/beatrice.py) to patch the executable directly from Windows and that will let you patch even more the executable by scrambling the bytes that are known on EDRs making it even more effective.
