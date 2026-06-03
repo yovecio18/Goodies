@@ -10,7 +10,7 @@ Unfortunately this guide will strip down some capabilities from the toolkit like
 ### Removing the base64 encoded files
 Use the following PowerShell command to empty all the Base64 encoded files, as my understating those are not so interesting and it is getting flagged by the AV:
 ```powershell
-Get-ChildItem -Path ".\NetExec\nxc\data" -Filter *.b64 -Recurse | ForEach-Object { "" | Set-Content $_.FullName }
+Get-ChildItem -Path ".\NetExec\nxc\data" -Filter *.bs64 -Recurse | ForEach-Object { "" | Set-Content $_.FullName }
 ```
 ### Removing the VBS files
 Use the following PowerShell command to empty all the VBS files, as my understating those are not so interesting and it is getting flagged by the AV:
