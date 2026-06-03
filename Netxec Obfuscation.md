@@ -15,7 +15,7 @@ Get-ChildItem -Path ".\NetExec\nxc\data" -Filter *.bs64 -Recurse | ForEach-Objec
 ### Removing the VBS files
 Use the following PowerShell command to empty all the VBS files, as my understating those are not so interesting and it is getting flagged by the AV:
 ```powershell
-Get-ChildItem -Path ".\NetExec\nxc\data" -Filter *.vbs-Recurse | ForEach-Object { "" | Set-Content $_.FullName }
+Get-ChildItem -Path ".\NetExec\nxc\data" -Filter *.vbs -Recurse | ForEach-Object { "" | Set-Content $_.FullName }
 ```
 ### Obfuscate all the python files
 Now is where the tedious part begins as all the files that are non "functionality" centric should be obfuscated and i used [this](https://github.com/lunarshade34/Python-Code-Obfuscator) tool to obfuscate and it transform to bytecode, base64 encode and do some marshalling shenanigans.
