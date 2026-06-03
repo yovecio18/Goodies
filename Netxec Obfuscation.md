@@ -54,6 +54,13 @@ d-----          6/2/2026   7:08 PM                wmi
 -a----          6/2/2026   7:36 PM          17754 wmi.py
 -a----          6/2/2026   7:08 PM              0 __init__.py
 ```
+### Check-up
+Use [this](https://github.com/rasta-mouse/ThreatCheck) tool to check simulateosly if the files are safe against the Windows Defender EDR API:
+```powershell
+ Get-ChildItem -Filter *.py | ForEach-Object {
+>>     Write-Host "=== Checking: $($_.Name) ===" -ForegroundColor Cyan
+>>     & "C:\Exclusions\Tools\ThreathCheck\ThreatCheck.exe" -f $_.FullName
+```
 ### Remove malicious dependencies
 Another issue is with some of the external dependencies that NetExec loads while compiling via PyInstaller so you must remove all the Lsassy, PypyKatz,HandleKatz and NanoDump from the "*netexec.spec*" file.
 **OBS: you might also want to remove those files from the "modules" folder, this breaks the structure but it is the quick way to make it work.** 
