@@ -34,6 +34,7 @@ BASE_SLANG = [
     ("Locked In", "Absolute intense focus.", "Time to get locked.", "Gen Z / Alpha")
 ]
 
+# Logical mode building blocks (Standard)
 LOGICAL_SUBJECTS = ["Bro", "Blud", "Shmlawg", "Unc", "Local NPC", "My opp", "The sigma"]
 LOGICAL_ACTIONS = [
     "started mewing today.",
@@ -46,16 +47,32 @@ LOGICAL_ACTIONS = [
     "went full delulu."
 ]
 
-UNHINGED_SUBJECTS = ["Skibidi blud", "Baby Gronk", "Unc", "Shmlawg", "Diddyblud", "GigaChad", "Local opp"]
-UNHINGED_MID = ["mewed at", "mogged", "fanum-taxed", "lore-dumped", "glazed", "rizzled", "looksmaxxed"]
-UNHINGED_END = ["Kai Cenat.", "Ohio.", "Grimace.", "Waffle House.", "6-7 gesture.", "Livvy Dunne."]
+# -------------------------------------------------------------------
+# MAXIMUM BRAIN ROT (Pure Slop Vocabulary)
+# -------------------------------------------------------------------
+CURSED_SUBJECTS = [
+    "Skibidi Diddyblud", "Baby Gronk", "Gassy Shmlawg", "Unc-maxxer", 
+    "Kai Cenat's gyatt", "Subway Surfer NPC", "Glitch-walking opp", 
+    "Aura-less blud", "Goox-maxing sigma", "Ohio Grimace", "Geeked-out blud"
+]
 
-UNHINGED_SHORT_PHRASES = [
-    "lost -99k aura fast.",
-    "got instant cooked, bro.",
-    "is totally delulu now.",
-    "went full crash out.",
-    "got labeled chopped, bruh."
+CURSED_VERBS = [
+    "mew-glitch-taxed", "lore-dump-mogged", "rizz-farmed", 
+    "diddy-bludded", "rage-bait-edged", "sigma-cooked", 
+    "fanum-taxed", "crash-out-mogged", "low-cortisol-goofed"
+]
+
+CURSED_OBJECTS = [
+    "the Grimace Shake.", "Kai Cenat's toes.", "a goon cave.", 
+    "the Ohio gas station.", "the 6-7 gesture.", "AI slop feed.", 
+    "a chopped haircut.", "Livvy Dunne's dog."
+]
+
+CURSED_FINISHERS = [
+    "lost -999k aura instantly.", "became 100% brain-rotted, bro.",
+    "got straight cooked, no-cap.", "is completely delulu-maxing now.",
+    "went full crash-out mode.", "is goofed up permanently.",
+    "got labeled ultra chopped."
 ]
 
 # -------------------------------------------------------------------
@@ -67,19 +84,25 @@ def generate_logical_sentence():
     return f"{sub} {act}"
 
 def generate_unhinged_sentence():
+    """Generates pure cursed slop locked to 4-5 words max."""
     if random.choice([True, False]):
-        sub = random.choice(UNHINGED_SUBJECTS)
-        verb = random.choice(UNHINGED_MID)
-        target = random.choice(UNHINGED_END)
-        sentence = f"{sub} {verb} {target}"
+        # [2-word subject] + [1-word verb] + [1 or 2-word object]
+        sub = random.choice(CURSED_SUBJECTS)
+        verb = random.choice(CURSED_VERBS)
+        obj = random.choice(CURSED_OBJECTS)
+        sentence = f"{sub} {verb} {obj}"
     else:
-        sub = random.choice(UNHINGED_SUBJECTS)
-        phrase = random.choice(UNHINGED_SHORT_PHRASES)
-        sentence = f"{sub} {phrase}"
+        # [2-word subject] + [2 or 3-word cursed finisher]
+        sub = random.choice(CURSED_SUBJECTS)
+        fin = random.choice(CURSED_FINISHERS)
+        sentence = f"{sub} {fin}"
 
+    # Strict truncation to enforce maximum 5 words
     words = sentence.split()
     if len(words) > 5:
-        sentence = " ".join(words[:5]) + "."
+        sentence = " ".join(words[:5])
+        if not sentence.endswith("."):
+            sentence += "."
         
     return sentence
 
@@ -94,7 +117,7 @@ def generate_dataset(mode="logical"):
             meaning = "Standard slang usage example."
             example = generate_logical_sentence()
         else:
-            meaning = "Maximum absurdity short sequence."
+            meaning = "Maximum brain-rotted cursed sequence."
             example = generate_unhinged_sentence()
             
         data.append((term_name, meaning, example, cohort))
@@ -145,7 +168,7 @@ def get_total_count():
 # UI Engine
 # -------------------------------------------------------------------
 def print_header(mode):
-    mode_label = "🧠 LOGICAL MODE" if mode == "logical" else "💀 UNHINGED MODE (4-5 WORDS)"
+    mode_label = "🧠 LOGICAL MODE" if mode == "logical" else "💀 UNHINGED SLOP (4-5 WORDS)"
     color = "bright_cyan" if mode == "logical" else "bright_magenta"
     
     header_text = Text(f"🔥 BRAINROT TERMINAL 🔥\n", style="bold magenta")
@@ -203,7 +226,7 @@ def main():
     
     rprint("[bold magenta]SELECT INITIAL MODE:[/bold magenta]")
     rprint(" [1] 🧠 Logical Mode (Standard slang)")
-    rprint(" [2] 💀 Unhinged Mode (Max 4-5 words)")
+    rprint(" [2] 💀 Unhinged Slop Mode (Max 4-5 words)")
     rprint(" [3] 🌟 Word of the Day (Quick view & exit)")
     
     init_choice = Prompt.ask("\nChoice", choices=["1", "2", "3"], default="1")
