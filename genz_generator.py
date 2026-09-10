@@ -1,274 +1,160 @@
-import sqlite3
 import random
-import time
+import argparse
 import sys
-from rich.console import Console
-from rich.panel import Panel
-from rich.text import Text
-from rich.prompt import Prompt
-from rich.align import Align
-from rich import print as rprint
 
-console = Console()
-
-# -------------------------------------------------------------------
-# Data Sources
-# -------------------------------------------------------------------
-BASE_SLANG = [
-    ("Skibidi", "Chaotic absurd funny word.", "Bro play was skibidi.", "Gen Alpha"),
-    ("Rizz", "Ability to charm people.", "He has unspoken rizz.", "Gen Z / Alpha"),
-    ("Fanum Tax", "Stealing food from friends.", "Gimme fries, Fanum tax.", "Gen Alpha"),
-    ("Gyatt", "Reaction to fine person.", "Gyatt look at that.", "Gen Z / Alpha"),
-    ("Sigma", "Independent lone wolf person.", "Grinding daily, real sigma.", "Gen Z / Alpha"),
-    ("Mewing", "Resting tongue defines jaw.", "Can not talk, mewing.", "Gen Z / Alpha"),
-    ("Mogging", "Outshining everyone in looks.", "Bro walked in mogging.", "Gen Alpha"),
-    ("Looksmaxxing", "Maximizing physical looks.", "He is looksmaxxing now.", "Gen Z / Alpha"),
-    ("Aura", "Cool social status points.", "Bro lost ten aura.", "Gen Alpha"),
-    ("Cooked", "Doomed or severe trouble.", "Did not study, cooked.", "Gen Z / Alpha"),
-    ("Crash Out", "Completely lose your mind.", "He decided to crash.", "Gen Z / Alpha"),
-    ("6-7", "Viral hand gesture meme.", "Bro said six seven.", "Gen Alpha"),
-    ("Glazing", "Over praising someone annoyingly.", "Stop glazing him blud.", "Gen Z / Alpha"),
-    ("Ohio", "Wild chaotic cursed event.", "Only in Ohio bruh.", "Gen Z / Alpha"),
-    ("Delulu", "Holding delusional high hopes.", "She is totally delulu.", "Gen Z / Alpha"),
-    ("Yap", "Talking endlessly about nothing.", "Bro keeps yapping daily.", "Gen Z / Alpha"),
-    ("Locked In", "Absolute intense focus.", "Time to get locked.", "Gen Z / Alpha")
+# Expanded 2025/2026 Gen Z & Gen Alpha Brainrot Vocabulary
+NOUNS = [
+    "sigma", "alpha", "beta", "blud", "shlawg", "fanum tax", "gyatt", 
+    "rizz", "rizzler", "skibidi", "Ohio", "grindset", "dawg", "aura", 
+    "diddyblud", "main NPC", "canon event", "brainrot", "drip"
 ]
 
-# Logical mode building blocks (Standard)
-LOGICAL_SUBJECTS = ["Bro", "Blud", "Shmlawg", "Unc", "Local NPC", "My opp", "The sigma"]
-LOGICAL_ACTIONS = [
-    "started mewing today.",
-    "is aura farming.",
-    "decided to crash.",
-    "got cooked instantly.",
-    "is yapping loudly.",
-    "lost ten aura.",
-    "paid Fanum Tax.",
-    "went full delulu."
+ADJECTIVES = [
+    "bussin", "delulu", "cringe", "cooked", "goofy ahh", "sussy", 
+    "zesty", "ultra-based", "clapped", "demure", "chronocore", "goated", "acoustic"
 ]
 
-# -------------------------------------------------------------------
-# MAXIMUM BRAIN ROT (Pure Slop Vocabulary)
-# -------------------------------------------------------------------
-CURSED_SUBJECTS = [
-    "Skibidi Diddyblud", "Baby Gronk", "Gassy Shmlawg", "Unc-maxxer", 
-    "Kai Cenat's gyatt", "Subway Surfer NPC", "Glitch-walking opp", 
-    "Aura-less blud", "Goox-maxing sigma", "Ohio Grimace", "Geeked-out blud"
+VERBS = [
+    "mogged", "ate", "cooked", "edged", "hit the griddy", "ghosted", 
+    "clapped back", "finessed", "flexed"
 ]
 
-CURSED_VERBS = [
-    "mew-glitch-taxed", "lore-dump-mogged", "rizz-farmed", 
-    "diddy-bludded", "rage-bait-edged", "sigma-cooked", 
-    "fanum-taxed", "crash-out-mogged", "low-cortisol-goofed"
+MODIFIERS = [
+    "no cap", "fr fr", "deadass", "big yikes", "uwu", "on god", "literally"
 ]
 
-CURSED_OBJECTS = [
-    "the Grimace Shake.", "Kai Cenat's toes.", "a goon cave.", 
-    "the Ohio gas station.", "the 6-7 gesture.", "AI slop feed.", 
-    "a chopped haircut.", "Livvy Dunne's dog."
-]
+def generate_logic():
+    """Generates a short, grammatically logical sentence using heavy slang."""
+    templates = [
+        f"Bro {random.choice(VERBS)} and left no crumbs, {random.choice(MODIFIERS)}.",
+        f"That {random.choice(NOUNS)} is looking real {random.choice(ADJECTIVES)} today.",
+        f"You can't have negative {random.choice(NOUNS)} in {random.choice(['Ohio', 'this economy'])}, {random.choice(MODIFIERS)}.",
+        f"The {random.choice(ADJECTIVES)} {random.choice(NOUNS)} just {random.choice(VERBS)} my {random.choice(NOUNS)}.",
+        f"Staying {random.choice(ADJECTIVES)} is a massive {random.choice(NOUNS)}."
+    ]
+    return random.choice(templates)
 
-CURSED_FINISHERS = [
-    "lost -999k aura instantly.", "became 100% brain-rotted, bro.",
-    "got straight cooked, no-cap.", "is completely delulu-maxing now.",
-    "went full crash-out mode.", "is goofed up permanently.",
-    "got labeled ultra chopped."
-]
+def generate_unhinged():
+    """Generates 3-4 word purely chaotic and stupid brainrot."""
+    pool = NOUNS + ADJECTIVES + VERBS
+    # Pick 3 or 4 random words
+    words = random.sample(pool, random.choice([3, 4]))
+    return " ".join(words)
 
-# -------------------------------------------------------------------
-# Sentence Generators
-# -------------------------------------------------------------------
-def generate_logical_sentence():
-    sub = random.choice(LOGICAL_SUBJECTS)
-    act = random.choice(LOGICAL_ACTIONS)
-    return f"{sub} {act}"
-
-def generate_unhinged_sentence():
-    """Generates pure cursed slop locked to 4-5 words max."""
-    if random.choice([True, False]):
-        # [2-word subject] + [1-word verb] + [1 or 2-word object]
-        sub = random.choice(CURSED_SUBJECTS)
-        verb = random.choice(CURSED_VERBS)
-        obj = random.choice(CURSED_OBJECTS)
-        sentence = f"{sub} {verb} {obj}"
-    else:
-        # [2-word subject] + [2 or 3-word cursed finisher]
-        sub = random.choice(CURSED_SUBJECTS)
-        fin = random.choice(CURSED_FINISHERS)
-        sentence = f"{sub} {fin}"
-
-    # Strict truncation to enforce maximum 5 words
-    words = sentence.split()
-    if len(words) > 5:
-        sentence = " ".join(words[:5])
-        if not sentence.endswith("."):
-            sentence += "."
-        
-    return sentence
-
-def generate_dataset(mode="logical"):
-    data = list(BASE_SLANG)
-    index = 1
-    while len(data) < 1000:
-        term_name = f"Brainrot #{index}"
-        cohort = random.choice(["Gen Alpha", "Gen Z / Alpha"])
-        
-        if mode == "logical":
-            meaning = "Standard slang usage example."
-            example = generate_logical_sentence()
-        else:
-            meaning = "Maximum brain-rotted cursed sequence."
-            example = generate_unhinged_sentence()
-            
-        data.append((term_name, meaning, example, cohort))
-        index += 1
-    return data
-
-# -------------------------------------------------------------------
-# DB Engine
-# -------------------------------------------------------------------
-def setup_database(mode="logical"):
-    conn = sqlite3.connect("brainrot_dual_short.db")
-    cursor = conn.cursor()
-    cursor.execute("DROP TABLE IF EXISTS brainrot")
-    cursor.execute('''
-        CREATE TABLE brainrot (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            term TEXT NOT NULL,
-            definition TEXT NOT NULL,
-            example TEXT NOT NULL,
-            cohort TEXT NOT NULL
-        )
-    ''')
-    dataset = generate_dataset(mode)
-    cursor.executemany('''
-        INSERT INTO brainrot (term, definition, example, cohort)
-        VALUES (?, ?, ?, ?)
-    ''', dataset)
-    conn.commit()
-    conn.close()
-
-def get_random_brainrot():
-    conn = sqlite3.connect("brainrot_dual_short.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT term, definition, example, cohort FROM brainrot ORDER BY RANDOM() LIMIT 1")
-    row = cursor.fetchone()
-    conn.close()
-    return row
-
-def get_total_count():
-    conn = sqlite3.connect("brainrot_dual_short.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT COUNT(*) FROM brainrot")
-    count = cursor.fetchone()[0]
-    conn.close()
-    return count
-
-# -------------------------------------------------------------------
-# UI Engine
-# -------------------------------------------------------------------
-def print_header(mode):
-    mode_label = "🧠 LOGICAL MODE" if mode == "logical" else "💀 UNHINGED SLOP (4-5 WORDS)"
-    color = "bright_cyan" if mode == "logical" else "bright_magenta"
-    
-    header_text = Text(f"🔥 BRAINROT TERMINAL 🔥\n", style="bold magenta")
-    subtitle_text = Text(f"[{mode_label}]", style=f"bold {color}")
-    panel = Panel(Align.center(header_text + subtitle_text), border_style=color, width=50)
-    console.print(panel)
-
-def display_entry(data, mode):
-    term, definition, example, cohort = data
-    border_col = "bright_cyan" if mode == "logical" else "bright_yellow"
-    
-    body = Text()
-    body.append("🔥 TERM: ", style="bold bright_yellow")
-    body.append(f"{term.upper()}\n", style="bold bright_cyan")
-    
-    body.append("💡 MEANING: ", style="bold bright_yellow")
-    body.append(f"{definition}\n", style="white")
-    
-    body.append("🗣️ EXAMPLE: ", style="bold bright_yellow")
-    body.append(f"\"{example}\"\n", style="bold italic bright_green")
-    
-    body.append("👥 COHORT: ", style="bold bright_yellow")
-    body.append(f"{cohort}", style="magenta")
-
-    panel = Panel(body, title="[bold magenta]💀 BRAIN ROT 💀[/bold magenta]", border_style=border_col, width=50)
-    console.print(panel)
-
-def display_word_of_the_day_and_exit():
-    """Displays Word of the Day and terminates app immediately."""
-    console.clear()
-    data = random.choice(BASE_SLANG)
-    term, definition, example, cohort = data
-    
-    body = Text()
-    body.append("🌟 WORD OF THE DAY 🌟\n\n", style="bold bright_green")
-    body.append("🔥 TERM: ", style="bold bright_yellow")
-    body.append(f"{term.upper()}\n", style="bold bright_cyan")
-    
-    body.append("💡 MEANING: ", style="bold bright_yellow")
-    body.append(f"{definition}\n", style="white")
-    
-    body.append("🗣️ EXAMPLE: ", style="bold bright_yellow")
-    body.append(f"\"{example}\"\n", style="bold italic bright_green")
-    
-    body.append("👥 COHORT: ", style="bold bright_yellow")
-    body.append(f"{cohort}", style="magenta")
-
-    panel = Panel(body, title="[bold bright_green]⚡ DAILY BRAINROT ⚡[/bold bright_green]", border_style="bright_green", width=50)
-    console.print(panel)
-    rprint("\n[bold magenta]Daily dose acquired! Go touch grass! 👋💀[/bold magenta]\n")
+def word_of_the_day():
+    """Generates a Word of the Day block and exits immediately."""
+    definitions = {
+        "Skibidi": "Context-dependent filler word for anything chaotic or absurd.",
+        "Fanum Tax": "The act of stealing a bite of your friend's food.",
+        "Gyatt": "An exclamation of surprise, usually regarding someone's appearance.",
+        "Mogging": "To establish dominance over someone by looking significantly better.",
+        "Chronocore": "Something extremely trendy but highly temporary.",
+        "Demure": "Mindful, considerate, and modest. Very demure.",
+        "Delulu": "Short for delusional; remaining intentionally ignorant of reality.",
+        "Goofy ahh": "Something remarkably silly or foolish."
+    }
+    word = random.choice(list(definitions.keys()))
+    print(f"🌟 WORD OF THE DAY: {word} 🌟")
+    print(f"Definition: {definitions[word]}")
+    print(f"Example: {generate_logic()}")
     sys.exit(0)
 
-def main():
-    console.clear()
-    
-    rprint("[bold magenta]SELECT INITIAL MODE:[/bold magenta]")
-    rprint(" [1] 🧠 Logical Mode (Standard slang)")
-    rprint(" [2] 💀 Unhinged Slop Mode (Max 4-5 words)")
-    rprint(" [3] 🌟 Word of the Day (Quick view & exit)")
-    
-    init_choice = Prompt.ask("\nChoice", choices=["1", "2", "3"], default="1")
-    
-    if init_choice == "3":
-        display_word_of_the_day_and_exit()
-        
-    current_mode = "logical" if init_choice == "1" else "unhinged"
-    setup_database(current_mode)
-    
-    while True:
-        console.clear()
-        print_header(current_mode)
-        rprint(f"[bold bright_green]Entries loaded:[/bold bright_green] [bold yellow]{get_total_count()}[/bold yellow]\n")
-        
-        rprint("[bold magenta]SELECT OPTION:[/bold magenta]")
-        rprint(" [1] 🎲 Fetch Random Slang")
-        rprint(f" [2] 🔄 Switch Mode (Current: {current_mode.upper()})")
-        rprint(" [3] 🌟 Word of the Day & Exit")
-        rprint(" [4] ❌ Exit App")
-        
-        choice = Prompt.ask("\nChoice", choices=["1", "2", "3", "4"], default="1")
-        
-        if choice == "1":
-            time.sleep(0.05)
-            data = get_random_brainrot()
-            if data:
-                display_entry(data, current_mode)
-            Prompt.ask("\nPress [enter] to continue")
-            
-        elif choice == "2":
-            current_mode = "unhinged" if current_mode == "logical" else "logical"
-            rprint(f"\n[bold yellow]Rebuilding database for {current_mode.upper()} mode...[/bold yellow]")
-            setup_database(current_mode)
-            time.sleep(0.3)
-            
-        elif choice == "3":
-            display_word_of_the_day_and_exit()
-            
-        elif choice == "4":
-            rprint("\n[bold magenta]Go touch grass! 👋💀[/bold magenta]\n")
-            break
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Gen Z / Gen Alpha Brainrot Generator")
+    parser.add_argument("--mode", choices=Here is a Python script packed with an extensive dictionary of Gen Z and Gen Alpha brainrot terminology, memes, and slang.
+
+It features all **3 modes**:
+1. **`logic`**: Generates syntactically sound, grammatically logical observations using brainrot concepts.
+2. **`unhinged`**: Outputs a strictly 3 to 4 word burst of chaotic brainrot.
+3. **`word_of_the_day`**: Outputs one word with its definition and exits.
+
+```python
+import random
+import sys
+
+# --- Extensive Brainrot & Gen Z/Alpha Lexicon ---
+LEXICON = {
+    "nouns": [
+        "skibidi", "gyatt", "fanum tax", "sigma", "rizzler", "mewing streak",
+        "aura", "crashout", "unc", "bop", "motion", "opp", "glazer", "NPC",
+        "shadow wizard money brigade", "yapaholic", "looksmaxxer", "gooner",
+        "phantom tax", "Ohio resident", "Baby Gronk", "Kai Cenat", "Livvy Dunne",
+        "edgemaxxer", "grimace shake", "sub-zero aura"
+    ],
+    "verbs": [
+        "rizz up", "mog", "looksmax", "mew", "glaze", "crash out",
+        "lock in", "yap", "cook", "tax", "loss-farm", "tweak"
+    ],
+    "adjectives": [
+        "cooked", "clapped", "unhinged", "sus", "bussin", "lowkey", "highkey",
+        "mid", "based", "brainrotted", "skibidi-certified", "valid", "cooked to a crisp"
+    ],
+    "outcomes": [
+        "losing 50,000 aura instantly",
+        "getting banished to Ohio",
+        "achieving maximum motion",
+        "getting mogged by an NPC",
+        "triggering an immediate crashout"
+    ]
+}
+
+WORD_OF_THE_DAY_DB = {
+    "Aura": "The invisible currency of social status. Gained by doing cool things, lost instantly by fumbling.",
+    "Mog": "To visually or socially dominate someone so completely that they look inferior by comparison.",
+    "Fanum Tax": "The mandatory percentage of food stolen from a friend's plate without prior notice.",
+    "Crashout": "To completely lose all self-control and ruin one's life over a trivial inconvenience.",
+    "Rizzler": "An individual with an absurdly high capability for smooth social persuasion.",
+    "Mewing": "The act of resting your tongue on the roof of your mouth to sculpt your jawline.",
+    "Glazing": "Over-hyping or brown-nosing someone to an embarrassing, excessive degree.",
+    "Unc": "An older person out of touch with modern slang, usually over the age of 22.",
+    "Yapaholic": "Someone incapable of stopping continuous, empty talk.",
+    "Motion": "Having money, power, active progress, and zero downtime in life.",
+    "Looksmaxxing": "The hyper-optimization of every physical trait through intense grooming and discipline.",
+    "Skibidi": "A universal noun/adjective indicating unpredictable, surreal, or modern absurd content."
+}
+
+def generate_logic():
+    templates = [
+        lambda: f"Maintaining a solid {random.choice(LEXICON['nouns'])} requires high-level {random.choice(LEXICON['nouns'])} and zero useless {LEXICON['verbs'][7]}.",
+        lambda: f"When a {random.choice(LEXICON['nouns'])} tries to {random.choice(LEXICON['verbs'])} without {random.choice(LEXICON['nouns'])}, it usually results in {random.choice(LEXICON['outcomes'])}.",
+        lambda: f"The fundamental difference between a true {random.choice(LEXICON['nouns'])} and an ordinary {random.choice(LEXICON['nouns'])} is their ability to {random.choice(LEXICON['verbs'])} under pressure.",
+        lambda: f"Excessive {random.choice(LEXICON['nouns'])} will leave your entire setup looking completely {random.choice(LEXICON['adjectives'])}."
+    ]
+    return random.choice(templates)()
+
+def generate_unhinged():
+    # Strictly 3 or 4 words of pure brainrot
+    all_words = (
+        LEXICON["nouns"] + 
+        LEXICON["verbs"] + 
+        LEXICON["adjectives"]
+    )
+    word_count = random.choice([3, 4])
+    selected = random.sample(all_words, word_count)
+    return " ".join(selected).upper()
+
+def generate_word_of_the_day():
+    word, definition = random.choice(list(WORD_OF_THE_DAY_DB.items()))
+    return f"📖 WORD OF THE DAY: {word.upper()}\nDefinition: {definition}"
+
+def run_generator(mode="logic"):
+    mode = mode.lower()
+    if mode == "logic":
+        print(generate_logic())
+    elif mode == "unhinged":
+        print(generate_unhinged())
+    elif mode in ["word_of_the_day", "word", "wotd"]:
+        print(generate_word_of_the_day())
+        sys.exit(0)
+    else:
+        print("Unknown mode. Choose from: 'logic', 'unhinged', or 'word_of_the_day'.")
 
 if __name__ == "__main__":
-    main()
+    # Change mode here: "logic", "unhinged", or "word_of_the_day"
+    selected_mode = "unhinged"
+    
+    # Or pass via command-line: python script.py unhinged
+    if len(sys.argv) > 1:
+        selected_mode = sys.argv[1]
+        
+    run_generator(selected_mode)
