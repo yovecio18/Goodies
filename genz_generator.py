@@ -116,7 +116,7 @@ def display_result(sentence, mode_title, border_color):
     body.append("STATUS: ", style="bold bright_yellow")
     body.append("100% Brainrotted (Fr Fr)", style="bold bright_cyan")
 
-    panel = Panel(body, title=f"[bold {border_color}]💀 {mode_title} 💀[/bold {border_color}]", border_style=border_color, width=54)
+    panel = Panel(body, title=f"[bold {border_color}] {mode_title} [/bold {border_color}]", border_style=border_color, width=54)
     console.print(panel)
 
 def word_of_the_day():
